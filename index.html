@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/disguise.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <script src="js/main.js" defer></script>
+</head>
+<body class="disguise-mode">
+    <div id="app-container" class="calculator-app">
+        <!-- Calculator UI -->
+        <div class="calc-header">
+            <span class="calc-title">Calculator</span>
+            <button id="toggle-notes-btn" title="Switch to Notes">&#9998;</button>
+        </div>
+        <input type="text" id="calc-display" value="" readonly />
+        <div class="calc-buttons">
+            <!-- Calculator buttons -->
+            <button data-value="7">7</button>
+            <button data-value="8">8</button>
+            <button data-value="9">9</button>
+            <button data-value="/" class="op">÷</button>
+
+            <button data-value="4">4</button>
+            <button data-value="5">5</button>
+            <button data-value="6">6</button>
+            <button data-value="*" class="op">&times;</button>
+
+            <button data-value="1">1</button>
+            <button data-value="2">2</button>
+            <button data-value="3">3</button>
+            <button data-value="-"
+                class= "op"
+                >−
+                </ button >
+
+                <
+                button
+                data - value = "0"
+                > 0 <
+                / button >
+                    <
+                    button
+                    data - value = "."
+                    > . <
+                    / button >
+                        <
+                        button
+                        id = "calc-clear"
+                        > C <
+                        / button >
+                            <
+                            button
+                            data - value = "+"
+                            class = "op"
+                            > + <
+                            / button >
+
+                                <
+                                button
+                                id = "calc-equals"
+                                >=<
+                                / button >
+                                    <
+                                    div
+                                    style = "flex: 1;" > & nbsp;<
+                                    / div >
+                                        <
+                                        div
+                                        style = "flex: 1;" > & nbsp;<
+                                        / div >
+                                            <
+                                            div
+                                            style = "flex: 1;" > & nbsp;<
+                                            / div >
+                                                <
+                                                div
+                                                style = "flex: 1;" > & nbsp;<
+                                                / div >
+                                                    </div >
+
+                                                    <!-- Notes UI (hidden by default) -->
+                                                    <
+                                                    textarea
+                                                    id = "notes-area"
+                                                    placeholder = "Type your notes here..."
+                                                    style = "display:none;"
+                                                    ></textarea >
+
+                                                        <!-- Hidden proxy access trigger -->
+                                                        <
+                                                        input
+                                                        type = "password"
+                                                        id = "proxy-access-input"
+                                                        placeholder = ""
+                                                        autocomplete = "off"
+                                                        tabindex="-1"
+                                                        style="
+                                                            position:absolute;
+                                                            left:-9999px;
+                                                            opacity:0;
+                                                            pointer-events:none;
+                                                            "
+                                                            />
+
+                                                            <!-- Panic Button -->
+                                                            <
+                                                            button
+                                                            id = "panic-btn"
+                                                            title = "Panic! Hide Proxy (Ctrl+Shift+X)"
+                                                            >& #9888;< /
+                                                                button >
+
+                                                                    </div >
+
+                                                                    <!-- Panic animation overlay -->
+                                                                    <
+                                                                    div
+                                                                    id = "panic-overlay"
+                                                                    ></div >
+
+                                                                        </body >
+                                                                        </html >
