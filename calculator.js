@@ -13,6 +13,16 @@
   const HISTORY_KEY = 'tangent-history';
   const MAX_HISTORY = 6;
 
+  function getPreferences() {
+    try {
+      return { separators: true, history: true, ...JSON.parse(localStorage.getItem('tangent-settings') || '{}') };
+    } catch {
+      return { separators: true, history: true };
+    }
+  }
+
+  const preferences = getPreferences();
+
   let current = '0';
   let storedValue = null;
   let activeOperator = null;
@@ -51,6 +61,7 @@
     if (absolute >= 1e12 || (absolute > 0 && absolute < 1e-9)) {
       return number.toExponential(7);
     }
+    if (!preferences.separators) return String(value);
     const [whole, decimal] = String(value).split('.');
     const formattedWhole = Number(whole).toLocaleString('en-US', { maximumFractionDigits: 0 });
     return decimal !== undefined ? `${formattedWhole}.${decimal}` : formattedWhole;
@@ -241,6 +252,7 @@
   }
 
   function addHistory(calculation, result) {
+    if (!preferences.history) return;
     const history = getHistory();
     history.unshift({ calculation, result });
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, MAX_HISTORY)));
@@ -251,6 +263,13 @@
     const history = getHistory();
     historyLists.forEach((list) => {
       list.replaceChildren();
+      if (!preferences.history) {
+        const disabled = document.createElement('li');
+        disabled.className = 'history-empty';
+        disabled.textContent = 'History is disabled in Settings.';
+        list.append(disabled);
+        return;
+      }
       if (!history.length) {
         const empty = document.createElement('li');
         empty.className = 'history-empty';

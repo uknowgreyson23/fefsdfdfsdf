@@ -6,22 +6,114 @@
   const ACCESS_HASH = '#tangent-access';
   const ACCESS_TOKEN = 'tangent-secret-unlocked';
   const SECRET_CODE = '423232323232';
+  const SETTINGS_KEY = 'tangent-settings';
+  const DEFAULT_SETTINGS = {
+    accent: 'coral',
+    glass: true,
+    motion: true,
+    sounds: false,
+    separators: true,
+    history: true
+  };
 
-  function getAccessToken() {
+  function storageGet(key, fallback = null, session = false) {
     try {
-      return sessionStorage.getItem(ACCESS_TOKEN);
+      const value = (session ? sessionStorage : localStorage).getItem(key);
+      return value === null ? fallback : value;
     } catch {
-      return null;
+      return fallback;
     }
   }
 
-  function setAccessToken(value) {
+  function storageSet(key, value, session = false) {
     try {
-      if (value) sessionStorage.setItem(ACCESS_TOKEN, 'true');
-      else sessionStorage.removeItem(ACCESS_TOKEN);
+      const store = session ? sessionStorage : localStorage;
+      if (value === null) store.removeItem(key);
+      else store.setItem(key, value);
     } catch {
-      // The URL hash still provides a graceful fallback for local-file browsing.
+      // Tangent remains functional when storage is unavailable.
     }
+  }
+
+  function readSettings() {
+    try {
+      return { ...DEFAULT_SETTINGS, ...JSON.parse(storageGet(SETTINGS_KEY, '{}')) };
+    } catch {
+      return { ...DEFAULT_SETTINGS };
+    }
+  }
+
+  let settings = readSettings();
+  const mediaDark = window.matchMedia('(prefers-color-scheme: dark)');
+  let themeChoice = storageGet('tangent-theme', 'system');
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+
+  function resolvedTheme(choice = themeChoice) {
+    return choice === 'system' ? (mediaDark.matches ? 'dark' : 'light') : choice;
+  }
+
+  function refreshThemeButtons() {
+    document.querySelectorAll('[data-theme-choice]').forEach((button) => {
+      const active = button.dataset.themeChoice === themeChoice;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+  }
+
+  function applyTheme(choice = themeChoice) {
+    themeChoice = choice;
+    const theme = resolvedTheme(choice);
+    root.dataset.theme = theme;
+    const toggle = document.querySelector('[data-theme-toggle]');
+    const label = document.querySelector('[data-theme-label]');
+    if (label) label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+    if (toggle) toggle.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`);
+    if (themeColor) {
+      const accent = getComputedStyle(root).getPropertyValue('--accent').trim();
+      themeColor.setAttribute('content', theme === 'dark' ? '#0c0f0e' : accent || '#ee6c4d');
+    }
+    refreshThemeButtons();
+  }
+
+  function applySettings() {
+    root.dataset.accent = settings.accent;
+    root.dataset.glass = settings.glass ? 'on' : 'off';
+    root.dataset.motion = settings.motion ? 'on' : 'off';
+  }
+
+  function saveSettings() {
+    storageSet(SETTINGS_KEY, JSON.stringify(settings));
+    applySettings();
+    applyTheme();
+  }
+
+  applySettings();
+  applyTheme();
+
+  mediaDark.addEventListener?.('change', () => {
+    if (themeChoice === 'system') applyTheme('system');
+  });
+
+  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
+    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    storageSet('tangent-theme', next);
+    applyTheme(next);
+  });
+
+  document.querySelectorAll('[data-theme-choice]').forEach((button) => {
+    button.addEventListener('click', () => {
+      storageSet('tangent-theme', button.dataset.themeChoice);
+      applyTheme(button.dataset.themeChoice);
+      playTone(520, 0.045);
+    });
+  });
+
+  function getAccessToken() {
+    return storageGet(ACCESS_TOKEN, null, true);
+  }
+
+  function setAccessToken(value) {
+    storageSet(ACCESS_TOKEN, value ? 'true' : null, true);
   }
 
   if (isSecretPage) {
@@ -62,26 +154,8 @@
     });
   }
 
-  const toggle = document.querySelector('[data-theme-toggle]');
-  const themeLabel = document.querySelector('[data-theme-label]');
-  const themeColor = document.querySelector('meta[name="theme-color"]');
-  const storedTheme = localStorage.getItem('tangent-theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  function applyTheme(theme) {
-    root.dataset.theme = theme;
-    const isDark = theme === 'dark';
-    if (themeLabel) themeLabel.textContent = isDark ? 'Light' : 'Dark';
-    if (toggle) toggle.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} theme`);
-    if (themeColor) themeColor.setAttribute('content', isDark ? '#111312' : '#ee6c4d');
-  }
-
-  applyTheme(storedTheme || (prefersDark ? 'dark' : 'light'));
-
-  toggle?.addEventListener('click', () => {
-    const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    applyTheme(nextTheme);
-    localStorage.setItem('tangent-theme', nextTheme);
+  document.querySelectorAll('[data-secret-exit]').forEach((link) => {
+    link.addEventListener('click', () => setAccessToken(false));
   });
 
   document.querySelectorAll('[data-year]').forEach((node) => {
@@ -95,15 +169,12 @@
     const now = new Date();
     if (clock) {
       clock.textContent = new Intl.DateTimeFormat(undefined, {
-        hour: 'numeric',
-        minute: '2-digit'
+        hour: 'numeric', minute: '2-digit'
       }).format(now);
     }
     if (date) {
       date.textContent = new Intl.DateTimeFormat(undefined, {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric'
+        weekday: 'long', month: 'long', day: 'numeric'
       }).format(now);
     }
   }
@@ -111,17 +182,108 @@
   updateClock();
   if (clock) window.setInterval(updateClock, 30000);
 
+  let audioContext;
+
+  function playTone(frequency = 420, duration = 0.035) {
+    if (!settings.sounds) return;
+    try {
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(0.035, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + duration);
+    } catch {
+      // Audio feedback is an optional enhancement.
+    }
+  }
+
+  document.addEventListener('click', (event) => {
+    const interactive = event.target.closest('button, .key, .button');
+    if (interactive && !interactive.matches('[data-reaction-stage]')) playTone(420, 0.035);
+  });
+
+  function showToast(message) {
+    let toast = document.querySelector('[data-toast]');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.dataset.toast = '';
+      toast.setAttribute('role', 'status');
+      document.body.append(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('is-visible');
+    window.clearTimeout(showToast.timer);
+    showToast.timer = window.setTimeout(() => toast.classList.remove('is-visible'), 2400);
+  }
+
+  // Settings page
+  document.querySelectorAll('[data-setting]').forEach((control) => {
+    const key = control.dataset.setting;
+    if (control.type === 'radio') control.checked = settings[key] === control.value;
+    else if (control.type === 'checkbox') control.checked = Boolean(settings[key]);
+    else control.value = settings[key];
+
+    control.addEventListener('change', () => {
+      if (control.type === 'radio' && !control.checked) return;
+      settings[key] = control.type === 'checkbox' ? control.checked : control.value;
+      saveSettings();
+    });
+  });
+
+  function historyCount() {
+    try {
+      return JSON.parse(storageGet('tangent-history', '[]')).length;
+    } catch {
+      return 0;
+    }
+  }
+
+  function updateHistoryCount() {
+    document.querySelectorAll('[data-history-count]').forEach((node) => {
+      node.textContent = historyCount();
+    });
+  }
+
+  updateHistoryCount();
+
+  document.querySelector('[data-settings-clear-history]')?.addEventListener('click', () => {
+    storageSet('tangent-history', null);
+    updateHistoryCount();
+    showToast('Calculation history cleared');
+  });
+
+  const resetButton = document.querySelector('[data-reset-tangent]');
+  let resetArmed = false;
+  resetButton?.addEventListener('click', () => {
+    if (!resetArmed) {
+      resetArmed = true;
+      resetButton.textContent = 'Click again to confirm reset';
+      window.setTimeout(() => {
+        resetArmed = false;
+        resetButton.textContent = 'Reset all Tangent data';
+      }, 3500);
+      return;
+    }
+    ['tangent-settings', 'tangent-theme', 'tangent-history', 'tangent-memory', 'tangent-angle', 'tangent-vault-notes', 'tangent-reaction-best'].forEach((key) => storageSet(key, null));
+    window.location.reload();
+  });
+
+  // Google browser
   const browserFrame = document.querySelector('[data-browser-frame]');
   const browserForm = document.querySelector('[data-browser-form]');
   const browserInput = document.querySelector('[data-browser-input]');
   const externalSearchLinks = document.querySelectorAll('[data-browser-external]');
   const browserLoading = document.querySelector('[data-browser-loading]');
 
-  function googleSearchUrl(query) {
+  function googleSearchUrl(query = '') {
     const trimmed = query.trim();
-    return trimmed
-      ? `https://www.google.com/search?q=${encodeURIComponent(trimmed)}`
-      : 'https://www.google.com/';
+    return trimmed ? `https://www.google.com/search?q=${encodeURIComponent(trimmed)}` : 'https://www.google.com/';
   }
 
   function updateExternalSearch() {
@@ -153,7 +315,285 @@
     else if (browserFrame) browserFrame.src = 'https://www.google.com/webhp?igu=1';
   });
 
-  document.querySelector('[data-secret-exit]')?.addEventListener('click', () => {
-    setAccessToken(false);
+  // Vault tabs
+  const vaultTabs = [...document.querySelectorAll('[data-vault-tab]')];
+  const vaultPanels = [...document.querySelectorAll('[data-vault-panel]')];
+
+  function openVaultPanel(name) {
+    vaultTabs.forEach((tab) => {
+      const active = tab.dataset.vaultTab === name;
+      tab.classList.toggle('is-active', active);
+      tab.setAttribute('aria-selected', String(active));
+    });
+    vaultPanels.forEach((panel) => {
+      panel.hidden = panel.dataset.vaultPanel !== name;
+    });
+    if (name === 'arcade') drawSnake();
+  }
+
+  vaultTabs.forEach((tab) => tab.addEventListener('click', () => openVaultPanel(tab.dataset.vaultTab)));
+
+  // Signal Snake
+  const snakeCanvas = document.querySelector('[data-snake-canvas]');
+  const snakeContext = snakeCanvas?.getContext('2d');
+  const snakeScore = document.querySelector('[data-snake-score]');
+  const snakeOverlay = document.querySelector('[data-snake-overlay]');
+  const snakeStart = document.querySelector('[data-snake-start]');
+  const CELL = 20;
+  let snake = [{ x: 12, y: 8 }, { x: 11, y: 8 }, { x: 10, y: 8 }];
+  let food = { x: 18, y: 8 };
+  let direction = { x: 1, y: 0 };
+  let queuedDirection = direction;
+  let snakeTimer = null;
+  let score = 0;
+
+  function snakeAccent() {
+    return getComputedStyle(root).getPropertyValue('--accent').trim() || '#ee6c4d';
+  }
+
+  function drawSnake() {
+    if (!snakeContext || !snakeCanvas) return;
+    snakeContext.fillStyle = '#0b1110';
+    snakeContext.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+    snakeContext.strokeStyle = 'rgba(255,255,255,.035)';
+    snakeContext.lineWidth = 1;
+    for (let x = 0; x <= snakeCanvas.width; x += CELL) {
+      snakeContext.beginPath(); snakeContext.moveTo(x, 0); snakeContext.lineTo(x, snakeCanvas.height); snakeContext.stroke();
+    }
+    for (let y = 0; y <= snakeCanvas.height; y += CELL) {
+      snakeContext.beginPath(); snakeContext.moveTo(0, y); snakeContext.lineTo(snakeCanvas.width, y); snakeContext.stroke();
+    }
+    snake.forEach((segment, index) => {
+      snakeContext.fillStyle = index === 0 ? '#ffffff' : snakeAccent();
+      snakeContext.beginPath();
+      snakeContext.roundRect(segment.x * CELL + 2, segment.y * CELL + 2, CELL - 4, CELL - 4, 5);
+      snakeContext.fill();
+    });
+    snakeContext.fillStyle = '#f7cb5b';
+    snakeContext.beginPath();
+    snakeContext.arc(food.x * CELL + CELL / 2, food.y * CELL + CELL / 2, 6, 0, Math.PI * 2);
+    snakeContext.fill();
+  }
+
+  function placeFood() {
+    do {
+      food = {
+        x: Math.floor(Math.random() * (snakeCanvas.width / CELL)),
+        y: Math.floor(Math.random() * (snakeCanvas.height / CELL))
+      };
+    } while (snake.some((segment) => segment.x === food.x && segment.y === food.y));
+  }
+
+  function endSnake() {
+    window.clearInterval(snakeTimer);
+    snakeTimer = null;
+    if (snakeOverlay) {
+      snakeOverlay.innerHTML = `<strong>Signal lost</strong><span>Final score: ${score}. Tap restart to reconnect.</span>`;
+      snakeOverlay.classList.remove('is-hidden');
+    }
+    if (snakeStart) snakeStart.textContent = 'Restart game';
+    playTone(120, 0.16);
+  }
+
+  function snakeTick() {
+    direction = queuedDirection;
+    const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+    const hitWall = head.x < 0 || head.y < 0 || head.x >= snakeCanvas.width / CELL || head.y >= snakeCanvas.height / CELL;
+    const hitSelf = snake.some((segment) => segment.x === head.x && segment.y === head.y);
+    if (hitWall || hitSelf) {
+      endSnake();
+      return;
+    }
+    snake.unshift(head);
+    if (head.x === food.x && head.y === food.y) {
+      score += 10;
+      if (snakeScore) snakeScore.textContent = score;
+      placeFood();
+      playTone(760, 0.05);
+    } else {
+      snake.pop();
+    }
+    drawSnake();
+  }
+
+  function startSnake() {
+    window.clearInterval(snakeTimer);
+    snake = [{ x: 12, y: 8 }, { x: 11, y: 8 }, { x: 10, y: 8 }];
+    direction = { x: 1, y: 0 };
+    queuedDirection = direction;
+    score = 0;
+    if (snakeScore) snakeScore.textContent = '0';
+    if (snakeOverlay) snakeOverlay.classList.add('is-hidden');
+    if (snakeStart) snakeStart.textContent = 'Restart game';
+    placeFood();
+    drawSnake();
+    snakeTimer = window.setInterval(snakeTick, 115);
+  }
+
+  function steerSnake(name) {
+    const directions = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
+    const next = directions[name];
+    if (!next || (next.x === -direction.x && next.y === -direction.y)) return;
+    queuedDirection = next;
+  }
+
+  snakeStart?.addEventListener('click', startSnake);
+  document.querySelectorAll('[data-snake-direction]').forEach((button) => {
+    button.addEventListener('click', () => steerSnake(button.dataset.snakeDirection));
+  });
+  document.addEventListener('keydown', (event) => {
+    if (!document.querySelector('[data-vault-panel="arcade"]:not([hidden])') || /INPUT|TEXTAREA/.test(event.target.tagName)) return;
+    const keyMap = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
+    if (keyMap[event.key]) {
+      event.preventDefault();
+      steerSnake(keyMap[event.key]);
+    }
+  });
+  drawSnake();
+
+  // Pulse Check reaction game
+  const reactionStage = document.querySelector('[data-reaction-stage]');
+  const reactionTitle = document.querySelector('[data-reaction-title]');
+  const reactionCopy = document.querySelector('[data-reaction-copy]');
+  const reactionBest = document.querySelector('[data-reaction-best]');
+  let reactionState = 'idle';
+  let reactionTimer;
+  let reactionStarted = 0;
+  let bestReaction = Number(storageGet('tangent-reaction-best', '0')) || 0;
+
+  if (reactionBest && bestReaction) reactionBest.textContent = `${bestReaction}ms`;
+
+  function resetReaction(title = 'Tap to arm', copy = 'Wait for the signal. Then move fast.') {
+    reactionState = 'idle';
+    reactionStage?.classList.remove('is-waiting', 'is-ready', 'is-early', 'is-result');
+    if (reactionTitle) reactionTitle.textContent = title;
+    if (reactionCopy) reactionCopy.textContent = copy;
+  }
+
+  reactionStage?.addEventListener('click', () => {
+    if (reactionState === 'idle' || reactionState === 'result') {
+      reactionState = 'waiting';
+      reactionStage.className = 'reaction-stage is-waiting';
+      reactionTitle.textContent = 'Hold…';
+      reactionCopy.textContent = 'Wait for the orb to flash.';
+      reactionTimer = window.setTimeout(() => {
+        reactionState = 'ready';
+        reactionStarted = performance.now();
+        reactionStage.className = 'reaction-stage is-ready';
+        reactionTitle.textContent = 'NOW';
+        reactionCopy.textContent = 'Tap!';
+        playTone(880, 0.06);
+      }, 900 + Math.random() * 2200);
+    } else if (reactionState === 'waiting') {
+      window.clearTimeout(reactionTimer);
+      reactionState = 'idle';
+      reactionStage.className = 'reaction-stage is-early';
+      reactionTitle.textContent = 'Too early';
+      reactionCopy.textContent = 'The signal was not ready.';
+      window.setTimeout(() => resetReaction(), 900);
+    } else if (reactionState === 'ready') {
+      const time = Math.round(performance.now() - reactionStarted);
+      reactionState = 'result';
+      reactionStage.className = 'reaction-stage is-result';
+      reactionTitle.textContent = `${time} ms`;
+      reactionCopy.textContent = time < 220 ? 'Lightning reflexes.' : time < 320 ? 'Sharp response.' : 'Try once more.';
+      if (!bestReaction || time < bestReaction) {
+        bestReaction = time;
+        storageSet('tangent-reaction-best', String(time));
+        if (reactionBest) reactionBest.textContent = `${time}ms`;
+      }
+      playTone(620, 0.08);
+    }
+  });
+
+  // Hidden stash
+  const notes = document.querySelector('[data-vault-notes]');
+  const noteCount = document.querySelector('[data-note-count]');
+  const noteStatus = document.querySelector('[data-note-status]');
+
+  function updateNotes() {
+    if (!notes) return;
+    storageSet('tangent-vault-notes', notes.value);
+    if (noteCount) noteCount.textContent = notes.value.length;
+    if (noteStatus) {
+      noteStatus.textContent = 'Saved';
+      window.clearTimeout(updateNotes.timer);
+      updateNotes.timer = window.setTimeout(() => { noteStatus.textContent = 'Saved locally'; }, 900);
+    }
+  }
+
+  if (notes) {
+    notes.value = storageGet('tangent-vault-notes', '');
+    if (noteCount) noteCount.textContent = notes.value.length;
+    notes.addEventListener('input', updateNotes);
+  }
+
+  const cipherInput = document.querySelector('[data-cipher-input]');
+  const cipherOutput = document.querySelector('[data-cipher-output]');
+
+  function encodeBase64(text) {
+    const bytes = new TextEncoder().encode(text);
+    let binary = '';
+    bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+    return btoa(binary);
+  }
+
+  document.querySelectorAll('[data-cipher]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const input = cipherInput?.value || '';
+      let output = '';
+      if (button.dataset.cipher === 'reverse') output = [...input].reverse().join('');
+      if (button.dataset.cipher === 'rot13') {
+        output = input.replace(/[a-z]/gi, (letter) => String.fromCharCode((letter.charCodeAt(0) - (letter <= 'Z' ? 65 : 97) + 13) % 26 + (letter <= 'Z' ? 65 : 97)));
+      }
+      if (button.dataset.cipher === 'base64') output = encodeBase64(input);
+      if (cipherOutput) cipherOutput.textContent = output || 'Nothing to scramble yet.';
+    });
+  });
+
+  const fortunes = [
+    'The shortest route is not always the clearest one.',
+    'A small number will unlock a much larger idea.',
+    'Your next good decision arrives after one quiet minute.',
+    'Precision is a form of kindness to your future self.',
+    'The signal is strongest where curiosity meets patience.'
+  ];
+  const accents = ['coral', 'violet', 'aqua', 'lime'];
+  const mysteryMessage = document.querySelector('[data-mystery-message]');
+
+  document.querySelectorAll('[data-mystery]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const mode = button.dataset.mystery;
+      if (mode === 'fortune') {
+        mysteryMessage.textContent = fortunes[Math.floor(Math.random() * fortunes.length)];
+      } else if (mode === 'palette') {
+        const currentIndex = accents.indexOf(settings.accent);
+        settings.accent = accents[(currentIndex + 1) % accents.length];
+        saveSettings();
+        mysteryMessage.textContent = `Chromatic shift complete: ${settings.accent}.`;
+      } else if (mode === 'matrix') {
+        root.dataset.easter = root.dataset.easter === 'on' ? 'off' : 'on';
+        mysteryMessage.textContent = root.dataset.easter === 'on' ? 'Ghost protocol active. Look closely at the grid.' : 'Ghost protocol sleeping.';
+      } else if (mode === 'glass') {
+        document.body.classList.toggle('ultra-glass');
+        showToast(document.body.classList.contains('ultra-glass') ? 'Reality distortion enabled' : 'Reality restored');
+      }
+    });
+  });
+
+  const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  let konamiIndex = 0;
+  document.addEventListener('keydown', (event) => {
+    if (!isSecretPage || /INPUT|TEXTAREA/.test(event.target.tagName)) return;
+    if (event.key === konami[konamiIndex]) {
+      konamiIndex += 1;
+      if (konamiIndex === konami.length) {
+        root.dataset.easter = root.dataset.easter === 'on' ? 'off' : 'on';
+        showToast('Ghost protocol unlocked');
+        konamiIndex = 0;
+      }
+    } else {
+      konamiIndex = 0;
+    }
   });
 })();

@@ -263,3 +263,204 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+@media (max-width: 980px) {
+  .settings-hero {
+    grid-template-columns: 1fr 300px;
+    gap: 32px;
+  }
+
+  .arcade-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reaction-stage {
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 760px) {
+  .settings-hero {
+    grid-template-columns: 1fr;
+    margin-bottom: 40px;
+  }
+
+  .settings-preview {
+    min-height: 260px;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-card--wide {
+    grid-column: auto;
+  }
+
+  .vault-topbar {
+    grid-template-columns: auto 1fr;
+    gap: 8px 14px;
+    padding-top: 13px;
+  }
+
+  .vault-tabs {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+
+  .vault-clock {
+    justify-self: end;
+  }
+
+  .vault-panel--padded {
+    padding: 24px;
+  }
+
+  .stash-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stash-card--mystery {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .settings-page {
+    padding-top: 48px;
+  }
+
+  .settings-preview {
+    min-height: 220px;
+  }
+
+  .preview-glass {
+    width: 230px;
+    height: 175px;
+  }
+
+  .preview-orb--one {
+    width: 120px;
+    height: 120px;
+  }
+
+  .preview-orb--two {
+    width: 150px;
+    height: 150px;
+  }
+
+  .settings-card {
+    padding: 22px;
+    border-radius: 23px;
+  }
+
+  .settings-card--danger {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .accent-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+  }
+
+  .accent-options label {
+    min-width: 0;
+  }
+
+  .vault-shell {
+    border-radius: 22px;
+  }
+
+  .vault-tabs {
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+
+  .vault-tabs::-webkit-scrollbar { display: none; }
+
+  .vault-tabs button {
+    flex: 0 0 auto;
+    padding-inline: 11px;
+    font-size: .65rem;
+  }
+
+  .vault-panel--padded {
+    min-height: 0;
+    padding: 18px;
+  }
+
+  .panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .game-card,
+  .stash-card {
+    padding: 15px;
+    border-radius: 18px;
+  }
+
+  .game-controls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .direction-pad {
+    width: 100%;
+  }
+
+  .direction-pad button {
+    flex: 1;
+  }
+
+  .mystery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mystery-grid button {
+    min-height: 105px;
+  }
+
+  .browser-note {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .toast {
+    right: 14px;
+    bottom: 86px;
+    left: 14px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .site-nav a {
+    padding-inline: 5px;
+    font-size: .68rem;
+  }
+
+  .vault-topbar {
+    padding-inline: 12px;
+  }
+
+  .vault-tabs button {
+    padding: 8px 9px;
+    font-size: .6rem;
+  }
+
+  .browser-address {
+    padding-left: 8px;
+  }
+
+  .browser-address__lock {
+    display: none;
+  }
+
+  .reaction-stage {
+    min-height: 245px;
+  }
+}
