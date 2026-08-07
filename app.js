@@ -2,9 +2,7 @@
   'use strict';
 
   const root = document.documentElement;
-  const isSecretPage = document.body.matches('[data-secret-page]');
-  const ACCESS_HASH = '#tangent-access';
-  const ACCESS_TOKEN = 'tangent-secret-unlocked';
+  const WORKSPACE_HASH = '#workspace';
   const SECRET_CODE = '423232323232';
   const SETTINGS_KEY = 'tangent-settings';
   const DEFAULT_SETTINGS = {
@@ -108,55 +106,58 @@
     });
   });
 
-  function getAccessToken() {
-    return storageGet(ACCESS_TOKEN, null, true);
-  }
+  const workspace = document.querySelector('[data-workspace]');
+  let secretBuffer = '';
 
-  function setAccessToken(value) {
-    storageSet(ACCESS_TOKEN, value ? 'true' : null, true);
-  }
-
-  if (isSecretPage) {
-    const hasAccess = window.location.hash === ACCESS_HASH || getAccessToken() === 'true';
-    if (!hasAccess) {
-      window.location.replace('index.html');
+  function openWorkspace() {
+    if (!workspace) {
+      window.location.href = `index.html${WORKSPACE_HASH}`;
       return;
     }
-    setAccessToken(true);
-    root.classList.remove('secret-pending');
-    if (window.location.hash) {
-      try {
-        history.replaceState(null, '', 'secret.html');
-      } catch {
-        // Local-file browser policies may keep the harmless access hash visible.
-      }
+    workspace.hidden = false;
+    workspace.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('workspace-open');
+    document.querySelector('[data-workspace-close]')?.focus();
+    try {
+      history.replaceState(null, '', 'index.html');
+    } catch {
+      // Local-file browser policies may keep the harmless workspace hash visible.
     }
-  } else {
-    let secretBuffer = '';
-
-    function registerSecretDigit(digit) {
-      secretBuffer = `${secretBuffer}${digit}`.slice(-SECRET_CODE.length);
-      if (secretBuffer === SECRET_CODE) {
-        setAccessToken(true);
-        window.location.href = `secret.html${ACCESS_HASH}`;
-      }
-    }
-
-    document.addEventListener('keydown', (event) => {
-      if (!event.ctrlKey && !event.metaKey && !event.altKey && /^\d$/.test(event.key)) {
-        registerSecretDigit(event.key);
-      }
-    });
-
-    document.addEventListener('click', (event) => {
-      const digitKey = event.target.closest('[data-action="digit"][data-value]');
-      if (digitKey) registerSecretDigit(digitKey.dataset.value);
-    });
   }
 
-  document.querySelectorAll('[data-secret-exit]').forEach((link) => {
-    link.addEventListener('click', () => setAccessToken(false));
+  function closeWorkspace() {
+    if (!workspace) return;
+    workspace.hidden = true;
+    workspace.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('workspace-open', 'ultra-glass');
+    document.querySelector('[data-display]')?.focus?.();
+  }
+
+  function registerSecretDigit(digit) {
+    secretBuffer = `${secretBuffer}${digit}`.slice(-SECRET_CODE.length);
+    if (secretBuffer === SECRET_CODE) {
+      secretBuffer = '';
+      openWorkspace();
+    }
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (!event.ctrlKey && !event.metaKey && !event.altKey && /^\d$/.test(event.key)) {
+      registerSecretDigit(event.key);
+    }
+    if (event.key === 'Escape' && workspace && !workspace.hidden) closeWorkspace();
   });
+
+  document.addEventListener('click', (event) => {
+    const digitKey = event.target.closest('[data-action="digit"][data-value]');
+    if (digitKey) registerSecretDigit(digitKey.dataset.value);
+  });
+
+  document.querySelectorAll('[data-workspace-close]').forEach((button) => {
+    button.addEventListener('click', closeWorkspace);
+  });
+
+  if (workspace && window.location.hash === WORKSPACE_HASH) openWorkspace();
 
   document.querySelectorAll('[data-year]').forEach((node) => {
     node.textContent = new Date().getFullYear();
@@ -270,7 +271,7 @@
       }, 3500);
       return;
     }
-    ['tangent-settings', 'tangent-theme', 'tangent-history', 'tangent-memory', 'tangent-angle', 'tangent-vault-notes', 'tangent-reaction-best'].forEach((key) => storageSet(key, null));
+    ['tangent-settings', 'tangent-theme', 'tangent-history', 'tangent-memory', 'tangent-angle', 'tangent-vault-notes', 'tangent-workspace-notes', 'tangent-reaction-best'].forEach((key) => storageSet(key, null));
     window.location.reload();
   });
 
@@ -315,23 +316,23 @@
     else if (browserFrame) browserFrame.src = 'https://www.google.com/webhp?igu=1';
   });
 
-  // Vault tabs
-  const vaultTabs = [...document.querySelectorAll('[data-vault-tab]')];
-  const vaultPanels = [...document.querySelectorAll('[data-vault-panel]')];
+  // In-page workspace tabs
+  const workspaceTabs = [...document.querySelectorAll('[data-workspace-tab]')];
+  const workspacePanels = [...document.querySelectorAll('[data-workspace-panel]')];
 
-  function openVaultPanel(name) {
-    vaultTabs.forEach((tab) => {
-      const active = tab.dataset.vaultTab === name;
+  function openWorkspacePanel(name) {
+    workspaceTabs.forEach((tab) => {
+      const active = tab.dataset.workspaceTab === name;
       tab.classList.toggle('is-active', active);
       tab.setAttribute('aria-selected', String(active));
     });
-    vaultPanels.forEach((panel) => {
-      panel.hidden = panel.dataset.vaultPanel !== name;
+    workspacePanels.forEach((panel) => {
+      panel.hidden = panel.dataset.workspacePanel !== name;
     });
-    if (name === 'arcade') drawSnake();
+    if (name === 'play') drawSnake();
   }
 
-  vaultTabs.forEach((tab) => tab.addEventListener('click', () => openVaultPanel(tab.dataset.vaultTab)));
+  workspaceTabs.forEach((tab) => tab.addEventListener('click', () => openWorkspacePanel(tab.dataset.workspaceTab)));
 
   // Signal Snake
   const snakeCanvas = document.querySelector('[data-snake-canvas]');
@@ -442,7 +443,7 @@
     button.addEventListener('click', () => steerSnake(button.dataset.snakeDirection));
   });
   document.addEventListener('keydown', (event) => {
-    if (!document.querySelector('[data-vault-panel="arcade"]:not([hidden])') || /INPUT|TEXTAREA/.test(event.target.tagName)) return;
+    if (!document.querySelector('[data-workspace-panel="play"]:not([hidden])') || /INPUT|TEXTAREA/.test(event.target.tagName)) return;
     const keyMap = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
     if (keyMap[event.key]) {
       event.preventDefault();
@@ -507,13 +508,13 @@
   });
 
   // Hidden stash
-  const notes = document.querySelector('[data-vault-notes]');
+  const notes = document.querySelector('[data-workspace-notes]');
   const noteCount = document.querySelector('[data-note-count]');
   const noteStatus = document.querySelector('[data-note-status]');
 
   function updateNotes() {
     if (!notes) return;
-    storageSet('tangent-vault-notes', notes.value);
+    storageSet('tangent-workspace-notes', notes.value);
     if (noteCount) noteCount.textContent = notes.value.length;
     if (noteStatus) {
       noteStatus.textContent = 'Saved';
@@ -523,7 +524,7 @@
   }
 
   if (notes) {
-    notes.value = storageGet('tangent-vault-notes', '');
+    notes.value = storageGet('tangent-workspace-notes', storageGet('tangent-vault-notes', ''));
     if (noteCount) noteCount.textContent = notes.value.length;
     notes.addEventListener('input', updateNotes);
   }
@@ -573,7 +574,7 @@
         mysteryMessage.textContent = `Chromatic shift complete: ${settings.accent}.`;
       } else if (mode === 'matrix') {
         root.dataset.easter = root.dataset.easter === 'on' ? 'off' : 'on';
-        mysteryMessage.textContent = root.dataset.easter === 'on' ? 'Ghost protocol active. Look closely at the grid.' : 'Ghost protocol sleeping.';
+        mysteryMessage.textContent = root.dataset.easter === 'on' ? 'Focus grid active. The background is moving.' : 'Focus grid returned to normal.';
       } else if (mode === 'glass') {
         document.body.classList.toggle('ultra-glass');
         showToast(document.body.classList.contains('ultra-glass') ? 'Reality distortion enabled' : 'Reality restored');
@@ -584,12 +585,12 @@
   const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
   let konamiIndex = 0;
   document.addEventListener('keydown', (event) => {
-    if (!isSecretPage || /INPUT|TEXTAREA/.test(event.target.tagName)) return;
+    if (!workspace || workspace.hidden || /INPUT|TEXTAREA/.test(event.target.tagName)) return;
     if (event.key === konami[konamiIndex]) {
       konamiIndex += 1;
       if (konamiIndex === konami.length) {
         root.dataset.easter = root.dataset.easter === 'on' ? 'off' : 'on';
-        showToast('Ghost protocol unlocked');
+        showToast('Focus grid unlocked');
         konamiIndex = 0;
       }
     } else {

@@ -323,6 +323,39 @@
   .stash-card--mystery {
     grid-column: auto;
   }
+
+  .workspace-overlay {
+    padding: 12px;
+  }
+
+  .workspace-window {
+    max-height: calc(100vh - 24px);
+    border-radius: 24px;
+  }
+
+  .workspace-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .workspace-tabs {
+    width: 100%;
+  }
+
+  .workspace-tabs button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .workspace-status {
+    position: absolute;
+    top: -46px;
+    right: 24px;
+  }
+
+  .workspace-panel--padded {
+    padding: 24px;
+  }
 }
 
 @media (max-width: 600px) {
@@ -435,6 +468,35 @@
     left: 14px;
     text-align: center;
   }
+
+  .workspace-overlay {
+    padding: 0;
+  }
+
+  .workspace-window {
+    width: 100%;
+    height: 100dvh;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .workspace-header {
+    min-height: 64px;
+    padding-inline: 14px;
+  }
+
+  .workspace-close span {
+    display: none;
+  }
+
+  .workspace-status {
+    display: none;
+  }
+
+  .workspace-panel--padded {
+    padding: 18px;
+  }
 }
 
 @media (max-width: 420px) {
@@ -462,5 +524,10 @@
 
   .reaction-stage {
     min-height: 245px;
+  }
+
+  .workspace-tabs button {
+    padding: 8px 9px;
+    font-size: .64rem;
   }
 }

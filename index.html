@@ -119,6 +119,131 @@
       <p>© <span data-year></span> Tangent</p>
     </footer>
 
+    <section class="workspace-overlay" data-workspace hidden aria-hidden="true" aria-label="Tangent Workspace">
+      <div class="workspace-backdrop" data-workspace-close aria-hidden="true"></div>
+      <div class="workspace-window" role="dialog" aria-modal="true" aria-labelledby="workspace-title">
+        <header class="workspace-header">
+          <div class="workspace-identity">
+            <span class="brand-mark" aria-hidden="true"><span></span></span>
+            <span><strong id="workspace-title">Tangent Workspace</strong><small>Browse · Play · Create</small></span>
+          </div>
+          <button class="workspace-close" type="button" data-workspace-close aria-label="Return to calculator"><span>Back to calculator</span> ×</button>
+        </header>
+
+        <div class="workspace-shell">
+          <div class="workspace-topbar">
+            <nav class="workspace-tabs" role="tablist" aria-label="Workspace sections">
+              <button class="is-active" type="button" role="tab" aria-selected="true" data-workspace-tab="browse"><span>◎</span> Browse</button>
+              <button type="button" role="tab" aria-selected="false" data-workspace-tab="play"><span>◇</span> Play</button>
+              <button type="button" role="tab" aria-selected="false" data-workspace-tab="tools"><span>✦</span> Tools</button>
+            </nav>
+            <span class="workspace-status"><span class="status-dot"></span> Ready</span>
+          </div>
+
+          <div class="workspace-panel" role="tabpanel" data-workspace-panel="browse">
+            <div class="browser-toolbar">
+              <button class="browser-icon-button" type="button" data-browser-home aria-label="Google home">⌂</button>
+              <button class="browser-icon-button" type="button" data-browser-reload aria-label="Reload search">↻</button>
+              <form class="browser-address" data-browser-form action="https://www.google.com/search" method="get" target="google-browser">
+                <input type="hidden" name="igu" value="1">
+                <span class="browser-address__lock" aria-hidden="true">●</span>
+                <input type="search" name="q" data-browser-input aria-label="Search Google" placeholder="Search Google or type a query" autocomplete="off">
+                <button type="submit">Search</button>
+              </form>
+              <a class="browser-open-button" data-browser-external href="https://www.google.com/" target="_blank" rel="noopener" aria-label="Open current search directly in Google">Open Google ↗</a>
+            </div>
+            <div class="browser-viewport">
+              <div class="browser-loading" data-browser-loading aria-hidden="true"></div>
+              <iframe name="google-browser" data-browser-frame src="https://www.google.com/webhp?igu=1" title="Embedded Google Search" referrerpolicy="no-referrer"></iframe>
+            </div>
+            <div class="browser-note">
+              <span><span class="status-dot"></span> Search is ready</span>
+              <a data-browser-external href="https://www.google.com/" target="_blank" rel="noopener">Open directly if a result blocks embedded viewing ↗</a>
+            </div>
+          </div>
+
+          <div class="workspace-panel workspace-panel--padded" role="tabpanel" data-workspace-panel="play" hidden>
+            <div class="panel-heading">
+              <div><p class="eyebrow">Take five</p><h2>Quick games, right when you need them.</h2></div>
+              <span class="online-pill"><span class="status-dot"></span> Local play</span>
+            </div>
+
+            <div class="arcade-grid">
+              <article class="game-card game-card--snake">
+                <div class="game-card__topline">
+                  <div><span class="game-kicker">01 / Classic</span><h3>Signal Snake</h3></div>
+                  <div class="score-chip">Score <strong data-snake-score>0</strong></div>
+                </div>
+                <div class="snake-wrap">
+                  <canvas width="480" height="320" data-snake-canvas aria-label="Snake game board"></canvas>
+                  <div class="game-overlay" data-snake-overlay><strong>Signal Snake</strong><span>Use arrow keys or the controls below.</span></div>
+                </div>
+                <div class="game-controls">
+                  <button class="game-button" type="button" data-snake-start>Start game</button>
+                  <div class="direction-pad" aria-label="Snake controls">
+                    <button type="button" data-snake-direction="up" aria-label="Move up">↑</button>
+                    <button type="button" data-snake-direction="left" aria-label="Move left">←</button>
+                    <button type="button" data-snake-direction="down" aria-label="Move down">↓</button>
+                    <button type="button" data-snake-direction="right" aria-label="Move right">→</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="game-card game-card--reaction">
+                <div class="game-card__topline">
+                  <div><span class="game-kicker">02 / Reflex</span><h3>Pulse Check</h3></div>
+                  <div class="score-chip">Best <strong data-reaction-best>—</strong></div>
+                </div>
+                <button class="reaction-stage" type="button" data-reaction-stage>
+                  <span class="reaction-orb" aria-hidden="true"></span>
+                  <strong data-reaction-title>Tap to arm</strong>
+                  <small data-reaction-copy>Wait for the signal. Then move fast.</small>
+                </button>
+                <p class="game-footnote">Tip: clicking too early resets the signal.</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="workspace-panel workspace-panel--padded" role="tabpanel" data-workspace-panel="tools" hidden>
+            <div class="panel-heading">
+              <div><p class="eyebrow">Creative tools</p><h2>A scratchpad, text utilities, and small surprises.</h2></div>
+              <button class="online-pill online-pill--button" type="button" data-mystery="glass">Adjust depth</button>
+            </div>
+
+            <div class="stash-grid">
+              <article class="stash-card stash-card--notes">
+                <div class="stash-card__heading"><span>Scratchpad</span><span data-note-status>Saved locally</span></div>
+                <textarea data-workspace-notes aria-label="Personal scratchpad" placeholder="Leave a thought here. It stays on this device."></textarea>
+                <div class="note-meta"><span>Auto-save enabled</span><span><span data-note-count>0</span> characters</span></div>
+              </article>
+
+              <article class="stash-card stash-card--cipher">
+                <div class="stash-card__heading"><span>Text transformer</span><span>v1.0</span></div>
+                <label for="cipher-input">Text in</label>
+                <textarea id="cipher-input" data-cipher-input placeholder="Type something to transform…"></textarea>
+                <div class="cipher-actions">
+                  <button type="button" data-cipher="rot13">ROT13</button>
+                  <button type="button" data-cipher="reverse">Reverse</button>
+                  <button type="button" data-cipher="base64">Base64</button>
+                </div>
+                <output class="cipher-output" data-cipher-output>Output waiting…</output>
+              </article>
+
+              <article class="stash-card stash-card--mystery">
+                <div class="stash-card__heading"><span>Extras</span><span>Three ideas</span></div>
+                <div class="mystery-grid">
+                  <button type="button" data-mystery="fortune"><span>◌</span><strong>Daily prompt</strong><small>Get a small thought</small></button>
+                  <button type="button" data-mystery="palette"><span>◈</span><strong>Color shuffle</strong><small>Try another accent</small></button>
+                  <button type="button" data-mystery="matrix"><span>⌁</span><strong>Focus grid</strong><small>Change the atmosphere</small></button>
+                </div>
+                <p class="mystery-message" data-mystery-message>Choose an extra to begin.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <script src="app.js" defer></script>
     <script src="calculator.js" defer></script>
   </body>
