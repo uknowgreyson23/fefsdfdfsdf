@@ -1,1 +1,124 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Google Classroom</title> <link rel="icon" href="https://ssl.gstatic.com/classroom/favicon.png"> <link rel="stylesheet" href="base.css"> <link rel="stylesheet" href="layout.css"> <link rel="stylesheet" href="disguise.css"> <link rel="stylesheet" href="animations.css"> </head> <body> <div id="decoy" class="decoy-wrap"> <header class="decoy-header"> <div class="decoy-logo"> <svg width="28" height="28" viewBox="0 0 24 24" fill="#0f9d58"><path d="M12 2L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 2z"/></svg> <span>Calculator Pro</span> </div> <nav class="decoy-nav"> <a href="#" data-tab="calc">Calculator</a> <a href="#" data-tab="notes">Notes</a> <a href="#" data-tab="about">About</a> <a href="#" id="secretOpen" title="Open">⚙</a> </nav> </header> <main class="decoy-main"> <section id="calc" class="panel active"> <div class="calculator"> <input type="text" id="calcDisplay" class="calc-display" readonly value="0"> <div class="calc-grid"> <button class="calc-btn op" data-val="C">C</button> <button class="calc-btn op" data-val="(">(</button> <button class="calc-btn op" data-val=")">)</button> <button class="calc-btn op" data-val="/">÷</button> <button class="calc-btn" data-val="7">7</button> <button class="calc-btn" data-val="8">8</button> <button class="calc-btn" data-val="9">9</button> <button class="calc-btn op" data-val="*">×</button> <button class="calc-btn" data-val="4">4</button> <button class="calc-btn" data-val="5">5</button> <button class="calc-btn" data-val="6">6</button> <button class="calc-btn op" data-val="-">−</button> <button class="calc-btn" data-val="1">1</button> <button class="calc-btn" data-val="2">2</button> <button class="calc-btn" data-val="3">3</button> <button class="calc-btn op" data-val="+">+</button> <button class="calc-btn" data-val="0">0</button> <button class="calc-btn" data-val=".">.</button> <button class="calc-btn eq" data-val="=" id="calcEquals">=</button> <button class="calc-btn op" data-val="del">⌫</button> </div> <div class="calc-history"> <h4>History</h4> <ul id="calcHistory"></ul> </div> </div> </section> <section id="notes" class="panel"> <div class="notes-wrap"> <div class="notes-sidebar"> <button id="newNote" class="btn-primary">+ New Note</button> <ul id="noteList"></ul> </div> <div class="notes-editor"> <input type="text" id="noteTitle" placeholder="Untitled note"> <textarea id="noteBody" placeholder="Start typing..."></textarea> </div> </div> </section> <section id="about" class="panel"> <div class="about-card"> <h2>Calculator Pro</h2> <p>A lightweight scientific calculator and note-taking tool built for students. Version 4.2.1</p> <p>Supports arithmetic, expression evaluation, and persistent notes stored locally in your browser.</p> <ul> <li>✓ Basic and scientific operations</li> <li>✓ Persistent history log</li> <li>✓ Offline-capable notes</li> <li>✓ Zero data collection</li> </ul> </div> </section> </main> <footer class="decoy-footer"> <span>© 2026 Calculator Pro • Educational Software</span> </footer> </div> <div id="unlockHint" class="unlock-hint">Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> or triple-click the logo</div> <script src="stealth.js"></script> <script src="main.js"></script> </body> </html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tangent is a precise, distraction-free calculator for everyday work.">
+    <meta name="theme-color" content="#ee6c4d">
+    <title>Tangent — Everyday Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="tokens.css">
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="calculator.css">
+    <link rel="stylesheet" href="responsive.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to calculator</a>
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Tangent home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>Tangent</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a class="is-active" href="index.html" aria-current="page">Standard</a>
+        <a href="scientific.html">Scientific</a>
+        <a href="guide.html">Guide</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme">
+        <span class="theme-toggle__icon" aria-hidden="true">◐</span>
+        <span data-theme-label>Dark</span>
+      </button>
+    </header>
+
+    <main id="main" class="page-shell">
+      <section class="page-intro">
+        <div>
+          <p class="eyebrow">Everyday calculator</p>
+          <h1>Make the numbers<br><em>feel simple.</em></h1>
+        </div>
+        <p class="intro-copy">Fast, focused, and built for the calculations that keep your day moving.</p>
+      </section>
+
+      <section class="calculator-layout" aria-label="Standard calculator workspace">
+        <article class="calc-surface" data-calculator data-mode="standard">
+          <div class="calc-topline">
+            <span class="model-label">Tangent S-01</span>
+            <span class="memory-indicator" data-memory-indicator aria-label="Memory status">M</span>
+          </div>
+
+          <div class="display" aria-label="Calculator display">
+            <div class="display__expression" data-expression>&nbsp;</div>
+            <output class="display__value" data-display aria-live="polite">0</output>
+          </div>
+
+          <div class="keypad keypad--standard" aria-label="Calculator keys">
+            <button class="key key--utility" type="button" data-action="clear">AC</button>
+            <button class="key key--utility" type="button" data-action="sign" aria-label="Change sign">±</button>
+            <button class="key key--utility" type="button" data-action="percent">%</button>
+            <button class="key key--operator" type="button" data-action="operator" data-value="/" aria-label="Divide">÷</button>
+
+            <button class="key" type="button" data-action="digit" data-value="7">7</button>
+            <button class="key" type="button" data-action="digit" data-value="8">8</button>
+            <button class="key" type="button" data-action="digit" data-value="9">9</button>
+            <button class="key key--operator" type="button" data-action="operator" data-value="*" aria-label="Multiply">×</button>
+
+            <button class="key" type="button" data-action="digit" data-value="4">4</button>
+            <button class="key" type="button" data-action="digit" data-value="5">5</button>
+            <button class="key" type="button" data-action="digit" data-value="6">6</button>
+            <button class="key key--operator" type="button" data-action="operator" data-value="-" aria-label="Subtract">−</button>
+
+            <button class="key" type="button" data-action="digit" data-value="1">1</button>
+            <button class="key" type="button" data-action="digit" data-value="2">2</button>
+            <button class="key" type="button" data-action="digit" data-value="3">3</button>
+            <button class="key key--operator" type="button" data-action="operator" data-value="+" aria-label="Add">+</button>
+
+            <button class="key key--zero" type="button" data-action="digit" data-value="0">0</button>
+            <button class="key" type="button" data-action="decimal" aria-label="Decimal point">.</button>
+            <button class="key key--equals" type="button" data-action="equals" aria-label="Equals">=</button>
+          </div>
+          <p class="keyboard-note"><kbd>Enter</kbd> solves <span aria-hidden="true">·</span> <kbd>Esc</kbd> clears</p>
+        </article>
+
+        <aside class="utility-panel" aria-label="Calculator details">
+          <section class="utility-card utility-card--time">
+            <span class="utility-label">Local time</span>
+            <strong data-clock>--:--</strong>
+            <span data-date>Loading date</span>
+          </section>
+
+          <section class="utility-card utility-card--history">
+            <div class="utility-card__heading">
+              <span class="utility-label">Recent</span>
+              <button type="button" class="text-button" data-clear-history>Clear</button>
+            </div>
+            <ol class="history-list" data-history>
+              <li class="history-empty">Your calculations will appear here.</li>
+            </ol>
+          </section>
+
+          <a class="mode-card" href="scientific.html">
+            <span>
+              <span class="utility-label">Need more?</span>
+              <strong>Open scientific mode</strong>
+            </span>
+            <span class="mode-card__arrow" aria-hidden="true">↗</span>
+          </a>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Designed for clear thinking.</p>
+      <p>© <span data-year></span> Tangent</p>
+    </footer>
+
+    <script src="app.js" defer></script>
+    <script src="calculator.js" defer></script>
+  </body>
+</html>

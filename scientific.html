@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A capable scientific calculator with trigonometry, logarithms, powers, and memory.">
+    <meta name="theme-color" content="#ee6c4d">
+    <title>Tangent — Scientific Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="tokens.css">
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="calculator.css">
+    <link rel="stylesheet" href="responsive.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to calculator</a>
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Tangent home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>Tangent</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="index.html">Standard</a>
+        <a class="is-active" href="scientific.html" aria-current="page">Scientific</a>
+        <a href="guide.html">Guide</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme">
+        <span class="theme-toggle__icon" aria-hidden="true">◐</span>
+        <span data-theme-label>Dark</span>
+      </button>
+    </header>
+
+    <main id="main" class="page-shell">
+      <section class="page-intro page-intro--compact">
+        <div>
+          <p class="eyebrow">Scientific workspace</p>
+          <h1>More range.<br><em>Same clarity.</em></h1>
+        </div>
+        <p class="intro-copy">Trigonometry, powers, logarithms, factorials, and dependable memory controls in one focused surface.</p>
+      </section>
+
+      <section class="scientific-layout" aria-label="Scientific calculator workspace">
+        <article class="calc-surface calc-surface--wide" data-calculator data-mode="scientific">
+          <div class="calc-topline">
+            <span class="model-label">Tangent X-02</span>
+            <span class="calc-status">
+              <span class="memory-indicator" data-memory-indicator aria-label="Memory status">M</span>
+              <button class="angle-toggle" type="button" data-action="angle" aria-label="Switch angle unit"><span data-angle>DEG</span></button>
+            </span>
+          </div>
+
+          <div class="display display--scientific" aria-label="Calculator display">
+            <div class="display__expression" data-expression>&nbsp;</div>
+            <output class="display__value" data-display aria-live="polite">0</output>
+          </div>
+
+          <div class="keypad keypad--scientific" aria-label="Scientific calculator keys">
+            <button class="key key--memory" type="button" data-action="memory-clear">MC</button>
+            <button class="key key--memory" type="button" data-action="memory-recall">MR</button>
+            <button class="key key--memory" type="button" data-action="memory-add">M+</button>
+            <button class="key key--memory" type="button" data-action="memory-subtract">M−</button>
+            <button class="key key--utility" type="button" data-action="clear">AC</button>
+            <button class="key key--utility" type="button" data-action="backspace" aria-label="Backspace">⌫</button>
+
+            <button class="key key--function" type="button" data-action="function" data-value="sin">sin</button>
+            <button class="key key--function" type="button" data-action="function" data-value="cos">cos</button>
+            <button class="key key--function" type="button" data-action="function" data-value="tan">tan</button>
+            <button class="key key--function" type="button" data-action="function" data-value="log">log</button>
+            <button class="key key--function" type="button" data-action="function" data-value="ln">ln</button>
+            <button class="key key--function" type="button" data-action="function" data-value="sqrt" aria-label="Square root">√</button>
+
+            <button class="key key--function" type="button" data-action="constant" data-value="pi" aria-label="Pi">π</button>
+            <button class="key key--function" type="button" data-action="constant" data-value="e" aria-label="Euler's number">e</button>
+            <button class="key key--function" type="button" data-action="function" data-value="square" aria-label="Square">x²</button>
+            <button class="key key--function" type="button" data-action="operator" data-value="^" aria-label="Power">xʸ</button>
+            <button class="key key--function" type="button" data-action="function" data-value="inverse" aria-label="Reciprocal">1/x</button>
+            <button class="key key--operator" type="button" data-action="operator" data-value="/" aria-label="Divide">÷</button>
+
+            <button class="key" type="button" data-action="digit" data-value="7">7</button>
+            <button class="key" type="button" data-action="digit" data-value="8">8</button>
+            <button class="key" type="button" data-action="digit" data-value="9">9</button>
+            <button class="key key--utility" type="button" data-action="percent">%</button>
+            <button class="key key--utility" type="button" data-action="sign" aria-label="Change sign">±</button>
+            <button class="key key--operator" type="button" data-action="operator" data-value="*" aria-label="Multiply">×</button>
+
+            <button class="key" type="button" data-action="digit" data-value="4">4</button>
+            <button class="key" type="button" data-action="digit" data-value="5">5</button>
+            <button class="key" type="button" data-action="digit" data-value="6">6</button>
+            <button class="key key--function" type="button" data-action="function" data-value="factorial" aria-label="Factorial">n!</button>
+            <button class="key key--function" type="button" data-action="function" data-value="abs" aria-label="Absolute value">|x|</button>
+            <button class="key key--operator" type="button" data-action="operator" data-value="-" aria-label="Subtract">−</button>
+
+            <button class="key" type="button" data-action="digit" data-value="1">1</button>
+            <button class="key" type="button" data-action="digit" data-value="2">2</button>
+            <button class="key" type="button" data-action="digit" data-value="3">3</button>
+            <button class="key key--function" type="button" data-action="function" data-value="exp" aria-label="Exponential">eˣ</button>
+            <button class="key key--function" type="button" data-action="function" data-value="cube" aria-label="Cube">x³</button>
+            <button class="key key--operator" type="button" data-action="operator" data-value="+" aria-label="Add">+</button>
+
+            <button class="key key--zero-scientific" type="button" data-action="digit" data-value="0">0</button>
+            <button class="key" type="button" data-action="decimal" aria-label="Decimal point">.</button>
+            <button class="key key--equals key--equals-wide" type="button" data-action="equals" aria-label="Equals">=</button>
+          </div>
+          <p class="keyboard-note"><kbd>Enter</kbd> solves <span aria-hidden="true">·</span> <kbd>Backspace</kbd> edits <span aria-hidden="true">·</span> <kbd>Esc</kbd> clears</p>
+        </article>
+
+        <aside class="utility-panel utility-panel--scientific" aria-label="Scientific calculator details">
+          <section class="utility-card utility-card--history">
+            <div class="utility-card__heading">
+              <span class="utility-label">Session history</span>
+              <button type="button" class="text-button" data-clear-history>Clear</button>
+            </div>
+            <ol class="history-list" data-history>
+              <li class="history-empty">Your calculations will appear here.</li>
+            </ol>
+          </section>
+          <section class="utility-card reference-card">
+            <span class="utility-label">Quick reference</span>
+            <dl>
+              <div><dt>DEG</dt><dd>Angle in degrees</dd></div>
+              <div><dt>RAD</dt><dd>Angle in radians</dd></div>
+              <div><dt>MR</dt><dd>Recall memory</dd></div>
+            </dl>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Precision without the clutter.</p>
+      <p>© <span data-year></span> Tangent</p>
+    </footer>
+
+    <script src="app.js" defer></script>
+    <script src="calculator.js" defer></script>
+  </body>
+</html>

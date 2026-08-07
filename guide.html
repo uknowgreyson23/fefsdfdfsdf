@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A concise guide to Tangent calculator features and keyboard controls.">
+    <meta name="theme-color" content="#ee6c4d">
+    <title>Tangent — Calculator Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="tokens.css">
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="calculator.css">
+    <link rel="stylesheet" href="responsive.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to guide</a>
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Tangent home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>Tangent</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="index.html">Standard</a>
+        <a href="scientific.html">Scientific</a>
+        <a class="is-active" href="guide.html" aria-current="page">Guide</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme">
+        <span class="theme-toggle__icon" aria-hidden="true">◐</span>
+        <span data-theme-label>Dark</span>
+      </button>
+    </header>
+
+    <main id="main" class="page-shell guide-page">
+      <section class="guide-hero">
+        <p class="eyebrow">The field guide</p>
+        <h1>Everything you need.<br><em>Nothing you don’t.</em></h1>
+        <p>Tangent is designed to be immediately familiar. Here are the few details that help you move even faster.</p>
+        <div class="guide-actions">
+          <a class="button button--primary" href="index.html">Open standard</a>
+          <a class="button button--secondary" href="scientific.html">Open scientific</a>
+        </div>
+      </section>
+
+      <section class="guide-grid" aria-label="Calculator guide topics">
+        <article class="guide-card guide-card--accent">
+          <span class="guide-card__number">01</span>
+          <h2>Keyboard first</h2>
+          <p>Type naturally. The number row, decimal point, and arithmetic keys work exactly as expected.</p>
+          <dl class="shortcut-list">
+            <div><dt><kbd>0–9</kbd></dt><dd>Enter a number</dd></div>
+            <div><dt><kbd>+ − × ÷</kbd></dt><dd>Choose an operation</dd></div>
+            <div><dt><kbd>Enter</kbd></dt><dd>Calculate the result</dd></div>
+            <div><dt><kbd>Esc</kbd></dt><dd>Clear everything</dd></div>
+            <div><dt><kbd>⌫</kbd></dt><dd>Remove one digit</dd></div>
+          </dl>
+        </article>
+
+        <article class="guide-card">
+          <span class="guide-card__number">02</span>
+          <h2>Memory controls</h2>
+          <p>Scientific mode keeps a number ready while you work through the rest of a problem.</p>
+          <ul class="feature-list">
+            <li><strong>M+</strong><span>Add the displayed value to memory.</span></li>
+            <li><strong>M−</strong><span>Subtract the displayed value from memory.</span></li>
+            <li><strong>MR</strong><span>Bring the stored value back to the display.</span></li>
+            <li><strong>MC</strong><span>Reset memory to zero.</span></li>
+          </ul>
+        </article>
+
+        <article class="guide-card">
+          <span class="guide-card__number">03</span>
+          <h2>Angles, your way</h2>
+          <p>Tap the DEG/RAD control in scientific mode before using sine, cosine, or tangent.</p>
+          <div class="comparison">
+            <div><strong>DEG</strong><span>Best for geometry and everyday angles.</span></div>
+            <div><strong>RAD</strong><span>Best for calculus, physics, and advanced math.</span></div>
+          </div>
+        </article>
+
+        <article class="guide-card guide-card--dark">
+          <span class="guide-card__number">04</span>
+          <h2>Built for focus</h2>
+          <p>Your theme and recent calculations stay on this device. Nothing is uploaded, and no account is needed.</p>
+          <div class="privacy-stamp"><span aria-hidden="true">✓</span> Local by design</div>
+        </article>
+      </section>
+
+      <section class="guide-footer-card">
+        <div>
+          <p class="eyebrow">Ready when you are</p>
+          <h2>Put a clear answer<br>within reach.</h2>
+        </div>
+        <a class="round-link" href="index.html" aria-label="Open standard calculator">↗</a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Made to get out of your way.</p>
+      <p>© <span data-year></span> Tangent</p>
+    </footer>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
